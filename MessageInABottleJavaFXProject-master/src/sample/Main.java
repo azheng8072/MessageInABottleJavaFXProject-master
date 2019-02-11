@@ -1,21 +1,22 @@
 package sample;
 
+import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.rmi.server.ExportException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main extends Application {
 
@@ -25,23 +26,22 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage)throws Exception {
         primaryStage.setTitle("SceneTest");
-        String fileName = "Bottle.csv";
-        File file = new File(fileName); //read about file
-        file.
-        try {
-            Scanner inputStream = new Scanner(file);
-            inputStream.next(); //ignores 1st line
-            while (inputStream.hasNext()){
-                String data = inputStream.next();  //gets whole line
-                String[] values = data.split(",");
-                double VaARIABLE = Double.parseDouble(values[x]); //replace variable with name of what the values means. replace x with the order place the value is in
-                System.out.println(values[x]);
-            }
-            inputStream.close();
-        }catch (FileNotFoundException e)
-        {
-            e.printStackTrace();
-        }
+//        String fileName = "C:\\Users\\BT_1N3_27\\IdeaProjects\\MessageInABottleJavaFXProject-master\\MessageInABottleJavaFXProject-master\\src\\sample\\Bottle.csv";
+//        File file = new File(fileName); //read about file
+//        try {
+//            Scanner inputStream = new Scanner(file);
+//            inputStream.next(); //ignores 1st line
+//            while (inputStream.hasNext()){
+//                String data = inputStream.next();  //gets whole line
+//                String[] values = data.split(",");
+//                double Va = Double.parseDouble(values[2]); //replace variable with name of what the values means. replace x with the order place the value is in
+//                System.out.println(Va);
+//            }
+//            inputStream.close();
+//        }catch (FileNotFoundException e)
+//        {
+//            e.printStackTrace();
+//        }
 
 
 
@@ -112,6 +112,107 @@ public class Main extends Application {
         primaryStage.show();
     }
 
+    public static class CSVReaderInJava {
+
+        public static void main(String... args) {
+            List<Book> books = readBooksFromCSV("books.txt");
+
+            // let's print all the person read from CSV file
+            for (Book b : books) {
+                System.out.println(b);
+            }
+        }
+
+        private static List<Book> readBooksFromCSV(String fileName) {
+            List<Book> books = new ArrayList<>();
+            Path pathToFile = Paths.get(fileName);
+
+            // create an instance of BufferedReader
+            // using try with resource, Java 7 feature to close resources
+            try (BufferedReader br = Files.newBufferedReader(pathToFile,
+                    StandardCharsets.US_ASCII)) {
+
+                // read the first line from the text file
+                String line = br.readLine();
+
+                // loop until all lines are read
+                while (line != null) {
+
+                    // use string.split to load a string array with the values from
+                    // each line of
+                    // the file, using a comma as the delimiter
+                    String[] attributes = line.split(",");
+
+                    Book book = createBook(attributes);
+
+                    // adding book into ArrayList
+                    books.add(book);
+
+                    // read next line before looping
+                    // if end of file reached, line would be null
+                    line = br.readLine();
+                }
+
+            } catch (IOException ioe) {
+                ioe.printStackTrace();
+            }
+
+            return books;
+        }
+
+        private static Book createBook(String[] metadata) {
+            String name = metadata[0];
+            int price = Integer.parseInt(metadata[1]);
+            String author = metadata[2];
+
+            // create and return book of this metadata
+            return new Book(name, price, author);
+        }
+
+    }
+
+    static class Book {
+        private String name;
+        private int price;
+        private String author;
+
+        public Book(String name, int price, String author) {
+            this.name = name;
+            this.price = price;
+            this.author = author;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public int getPrice() {
+            return price;
+        }
+
+        public void setPrice(int price) {
+            this.price = price;
+        }
+
+        public String getAuthor() {
+            return author;
+        }
+
+        public void setAuthor(String author) {
+            this.author = author;
+        }
+
+        @Override
+        public String toString() {
+            return "Book [name=" + name + ", price=" + price + ", author=" + author
+                    + "]";
+        }
+
+    }
 
     public static void main(String[] args) {
         launch(args);
